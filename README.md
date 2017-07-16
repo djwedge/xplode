@@ -11,3 +11,4 @@ access via https://djwedge.github.io/xplode/
 - enemies animation
 - spawning logic
 - modes : time attack or survival (add survival logic)
+- define spawning area

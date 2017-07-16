@@ -27,6 +27,14 @@ var mainState = {
 
         //time = this.game.time.create(false);
         game.time.events.loop(500, this.createNewEnemy, this);
+        
+        // Add score in the top middle
+        this.score = 0;
+        this.labelScore = game.add.text(300, 15, "score : 0", 
+            { font: "20px Arial", fill: "#ffffff" });
+        this.timeLimit = 99;
+        this.labelTime = game.add.text(190, 20, "99", 
+            { font: "30px Arial", fill: "#ffffff" });
     },
 
     update: function() {  
@@ -35,6 +43,9 @@ var mainState = {
     
     destroySprite: function(sprite) {
         sprite.destroy();
+        // increase score each time an enemy is destroyed
+        this.score += 1;
+        this.labelScore.text = "score : " + this.score;
     },
 
     createNewEnemy: function() {
