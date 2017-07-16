@@ -25,10 +25,12 @@ var mainState = {
         game.scale.pageAlignVertically = true;
         
         this.spawnAllowed = true;
+        this.killAllowed = true;
         this.enemyGroup = game.add.group(); // create group
 
         // create enemy every 0.5s
-        game.time.events.loop(500, this.createNewEnemy, this);
+        game.time.events.loop(250, this.randomSpawn, this);
+        //game.time.events.loop(game.rnd.integerInRange(200, 800), this.createNewEnemy, this);
         
         // create sounds
         this.spawnSound = game.add.audio('spawn');
@@ -44,8 +46,8 @@ var mainState = {
         
         // Create a custom timer
         this.timer = game.time.create();
-        // Create a delayed event 1m and 30s from now
-        this.timerEvent = this.timer.add(Phaser.Timer.SECOND * 3, this.endTimer, this);
+        // Create a delayed event 30s from now
+        this.timerEvent = this.timer.add(Phaser.Timer.SECOND * 30, this.endTimer, this);
         // Start the timer
         this.timer.start();
     },
@@ -64,6 +66,15 @@ var mainState = {
             this.labelTime = game.add.text(120, 20, "Game Over", 
             { font: "30px Arial", fill: "#ffffff" });
             this.spawnAllowed = false;
+            this.killAllowed = false;
+            this.labelRestart = game.add.text(105, 230, "Click to restart", 
+            { font: "30px Arial", fill: "#ffffff" });
+            // Enable input on the label
+            this.labelRestart.inputEnabled = true;
+            // Attach a function to the input down ( click/tap)
+            this.labelRestart.events.onInputDown.add(function() {
+                this.game.state.start('main');
+            }, this);
         }
     },
     
@@ -79,14 +90,19 @@ var mainState = {
     },
     
     destroySprite: function(sprite) {
-        sprite.destroy();
-        // increase score each time an enemy is destroyed
-        this.score += 1;
-        this.labelScore.text = "score : " + this.score;
-        this.killSound.play();
-        
+        if (this.killAllowed) {
+            sprite.destroy();
+            // increase score each time an enemy is destroyed
+            this.score += 1;
+            this.labelScore.text = "score : " + this.score;
+            this.killSound.play();
+        }
     },
 
+    randomSpawn: function() {
+        this.game.time.events.add(game.rnd.integerInRange(200, 800), this.createNewEnemy, this);
+    },
+    
     createNewEnemy: function() {
         //var mx = game.width - game.cache.getImage('enemy').width;
         //var my = game.height - game.cache.getImage('enemy').height;
