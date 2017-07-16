@@ -3,6 +3,8 @@ var mainState = {
     preload: function() {  
         // Here we preload the assets
         game.load.image('enemy', 'assets/phaser-dude.png');
+        game.load.audio('spawn', 'assets/plop.wav');
+        game.load.audio('kill', 'assets/boom1.wav'); 
     },
 
     create: function() {
@@ -28,6 +30,10 @@ var mainState = {
         //time = this.game.time.create(false);
         game.time.events.loop(500, this.createNewEnemy, this);
         
+        // create sounds
+        this.spawnSound = game.add.audio('spawn');
+        this.killSound = game.add.audio('kill');
+        
         // Add score in the top middle
         this.score = 0;
         this.labelScore = game.add.text(300, 15, "score : 0", 
@@ -46,6 +52,8 @@ var mainState = {
         // increase score each time an enemy is destroyed
         this.score += 1;
         this.labelScore.text = "score : " + this.score;
+        this.killSound.play();
+        
     },
 
     createNewEnemy: function() {
@@ -56,6 +64,7 @@ var mainState = {
             sprite.inputEnabled = true;
             sprite.input.useHandCursor = true;
             sprite.events.onInputDown.add(this.destroySprite, this);
+            this.spawnSound.play();
         }
     },
 };
