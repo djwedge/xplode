@@ -27,7 +27,7 @@ var mainState = {
         this.spawnAllowed = true;
         this.enemyGroup = game.add.group(); // create group
 
-        //time = this.game.time.create(false);
+        // create enemy every 0.5s
         game.time.events.loop(500, this.createNewEnemy, this);
         
         // create sounds
@@ -41,10 +41,41 @@ var mainState = {
         this.timeLimit = 99;
         this.labelTime = game.add.text(190, 20, "99", 
             { font: "30px Arial", fill: "#ffffff" });
+        
+        // Create a custom timer
+        this.timer = game.time.create();
+        // Create a delayed event 1m and 30s from now
+        this.timerEvent = this.timer.add(Phaser.Timer.SECOND * 3, this.endTimer, this);
+        // Start the timer
+        this.timer.start();
     },
 
     update: function() {  
         // Here we update the game 60 times per second
+    },
+    
+    render: function() {
+        // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
+        if (this.timer.running) {
+            this.labelTime.text = this.formatTime(Math.round((this.timerEvent.delay - this.timer.ms) / 1000));
+        }
+        else {
+            this.labelTime.text = "";
+            this.labelTime = game.add.text(120, 20, "Game Over", 
+            { font: "30px Arial", fill: "#ffffff" });
+            this.spawnAllowed = false;
+        }
+    },
+    
+    endTimer: function() {
+        // Stop the timer when the delayed event triggers
+        this.timer.stop();
+    },
+    formatTime: function(s) {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        var minutes = "0" + Math.floor(s / 60);
+        var seconds = "0" + (s - minutes * 60);
+        return seconds.substr(-2);    
     },
     
     destroySprite: function(sprite) {
